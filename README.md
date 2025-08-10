@@ -30,7 +30,7 @@ PWA: Service Workers, Web Manifest
 bash
 Copy
 Edit
-git clone https://github.com/yourusername/ai-note-taking-app.git
+git clone https://git@github.com:Kelvyn2012/Note_AI.git
 cd ai-note-taking-app
 2️⃣ Create and Activate Virtual Environment
 bash
