@@ -95,3 +95,7 @@ def toggle_favorite(request, note_id):
     note.is_favorite = not note.is_favorite
     note.save()
     return redirect('home')
+
+def view_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    return render(request, 'notes/view_note.html', {'note': note})

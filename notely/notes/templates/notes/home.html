@@ -38,15 +38,15 @@
     <div class="row g-4">
         {% for note in notes %}
         <div class="col-12 col-md-6 col-lg-4">
-            <div class="card note-card note-card-{{ note.color }} shadow-sm {% if note.is_pinned %}pinned{% endif %} h-100">
+            <div class="card note-card note-card-{{ note.color }} shadow-sm {% if note.is_pinned %}pinned{% endif %} h-100" style="cursor: pointer;">
                 <div class="card-header bg-transparent border-0 d-flex justify-content-between py-2">
                     <div>
                         {% if note.is_pinned %}<span class="badge bg-warning text-dark"><i class="bi bi-pin-angle-fill"></i></span>{% endif %}
                         {% if note.category %}<span class="badge bg-secondary"><i class="bi bi-folder"></i> {{ note.category }}</span>{% endif %}
                     </div>
-                    <a href="{% url 'toggle_favorite' note.id %}">{% if note.is_favorite %}<i class="bi bi-heart-fill text-danger fs-5"></i>{% else %}<i class="bi bi-heart text-muted fs-5"></i>{% endif %}</a>
+                    <a href="{% url 'toggle_favorite' note.id %}" onclick="event.stopPropagation();">{% if note.is_favorite %}<i class="bi bi-heart-fill text-danger fs-5"></i>{% else %}<i class="bi bi-heart text-muted fs-5"></i>{% endif %}</a>
                 </div>
-                <div class="card-body">
+                <div class="card-body" onclick="window.location.href='{% url 'view_note' note.id %}';">
                     <h5 class="fw-bold">{{ note.title }}</h5>
                     <div class="note-content mb-3"><p>{{ note.content|truncatewords:50|linebreaks }}</p></div>
                     {% if note.summary %}<div class="alert alert-light py-2"><small class="text-muted"><i class="bi bi-robot"></i> <strong>AI:</strong> {{ note.summary }}</small></div>{% endif %}
@@ -55,9 +55,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted"><i class="bi bi-clock"></i> {{ note.updated_at|timesince }} ago</small>
                         <div class="btn-group btn-group-sm">
-                            <a href="{% url 'toggle_pin' note.id %}" class="btn btn-outline-secondary btn-icon" title="Pin"><i class="bi bi-pin-angle"></i></a>
-                            <a href="{% url 'edit_note' note.id %}" class="btn btn-outline-primary btn-icon"><i class="bi bi-pencil"></i></a>
-                            <a href="{% url 'delete_note' note.id %}" class="btn btn-outline-danger btn-icon" onclick="return confirmDelete('{{ note.title|escapejs }}');"><i class="bi bi-trash"></i></a>
+                            <a href="{% url 'toggle_pin' note.id %}" class="btn btn-outline-secondary btn-icon" title="Pin" onclick="event.stopPropagation();"><i class="bi bi-pin-angle"></i></a>
+                            <a href="{% url 'edit_note' note.id %}" class="btn btn-outline-primary btn-icon" onclick="event.stopPropagation();"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'delete_note' note.id %}" class="btn btn-outline-danger btn-icon" onclick="event.stopPropagation(); return confirmDelete('{{ note.title|escapejs }}');"><i class="bi bi-trash"></i></a>
                         </div>
                     </div>
                 </div>

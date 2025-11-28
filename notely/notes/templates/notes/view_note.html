@@ -1,0 +1,92 @@
+{% extends 'notes/base.html' %}
+
+{% block title %}{{ note.title }} - Notely{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+    <!-- Back button -->
+    <div class="mb-3">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Notes
+        </a>
+    </div>
+
+    <!-- Note card -->
+    <div class="card note-card note-card-{{ note.color }} shadow">
+        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
+            <div>
+                {% if note.is_pinned %}
+                    <span class="badge bg-warning text-dark me-2">
+                        <i class="bi bi-pin-angle-fill"></i> Pinned
+                    </span>
+                {% endif %}
+                {% if note.category %}
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-folder"></i> {{ note.category }}
+                    </span>
+                {% endif %}
+            </div>
+            <div>
+                <a href="{% url 'toggle_favorite' note.id %}" class="btn btn-sm btn-link text-decoration-none">
+                    {% if note.is_favorite %}
+                        <i class="bi bi-heart-fill text-danger fs-4"></i>
+                    {% else %}
+                        <i class="bi bi-heart text-muted fs-4"></i>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <h1 class="display-6 fw-bold mb-4">{{ note.title }}</h1>
+
+            <!-- Content -->
+            <div class="note-full-content mb-4" style="white-space: pre-wrap; line-height: 1.8;">{{ note.content }}</div>
+
+            <!-- AI Summary -->
+            {% if note.summary %}
+            <div class="alert alert-info border-start border-5 border-info">
+                <h6 class="alert-heading">
+                    <i class="bi bi-robot"></i> AI Summary
+                </h6>
+                <p class="mb-0">{{ note.summary }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Metadata -->
+            <div class="row mt-4 pt-3 border-top">
+                <div class="col-md-6">
+                    <small class="text-muted">
+                        <i class="bi bi-calendar-plus"></i> Created: {{ note.created_at|date:"M d, Y g:i A" }}
+                    </small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        <i class="bi bi-clock-history"></i> Last updated: {{ note.updated_at|timesince }} ago
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-transparent border-0 p-4">
+            <div class="d-flex gap-2 justify-content-end">
+                <a href="{% url 'toggle_pin' note.id %}" class="btn btn-outline-warning">
+                    <i class="bi bi-pin-angle"></i> {% if note.is_pinned %}Unpin{% else %}Pin{% endif %}
+                </a>
+                <a href="{% url 'edit_note' note.id %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'delete_note' note.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this note?');">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    return confirm('Are you sure you want to delete this note?');
+}
+</script>
+{% endblock %}
