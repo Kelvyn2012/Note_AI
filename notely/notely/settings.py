@@ -28,6 +28,12 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,note-ai-nmdr.onrender.com').split(',')
 
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = [
+    'https://note-ai-nmdr.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 # Application definition
 
