@@ -165,6 +165,13 @@ The application uses the T5-small model from Hugging Face for text summarization
 - **Input Limit**: First 512 characters of the note content
 - **Summary Length**: 20-60 words
 - **First Load**: The model downloads on first use (approximately 200MB)
+- **Fallback Mode**: If the model cannot load (e.g., memory constraints on free hosting), the app automatically falls back to simple text truncation
+
+### Memory Requirements
+
+- **Local Development**: AI summarization works with sufficient RAM (2GB+)
+- **Render Free Tier**: May fall back to simple summarization due to 512MB RAM limit
+- **Render Paid Plans**: Full AI summarization available with 1GB+ RAM plans
 
 ## Database Schema
 
