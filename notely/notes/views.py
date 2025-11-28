@@ -1,13 +1,57 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from django.core.paginator import Paginator
+from django.db.models import Q
 from .models import Note
 from .forms import NoteForm
-from .utils import summarize_text  # (we'll create this in step 4)
+from .utils import summarize_text
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 def home(request):
-    notes = Note.objects.order_by("-created_at")
-    return render(request, "notes/home.html", {"notes": notes})
+    # Get all notes with ordering (pinned first, then by creation date)
+    notes_list = Note.objects.all()
+
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        notes_list = notes_list.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(category__icontains=search_query)
+        )
+
+    # Category filter
+    category_filter = request.GET.get('category', '')
+    if category_filter:
+        notes_list = notes_list.filter(category=category_filter)
+
+    # Color filter
+    color_filter = request.GET.get('color', '')
+    if color_filter:
+        notes_list = notes_list.filter(color=color_filter)
+
+    # Favorites filter
+    if request.GET.get('favorites') == 'true':
+        notes_list = notes_list.filter(is_favorite=True)
+
+    # Get unique categories for filter dropdown
+    categories = Note.objects.values_list('category', flat=True).distinct().exclude(category__isnull=True).exclude(category='')
+
+    # Pagination
+    paginator = Paginator(notes_list, 12)  # Show 12 notes per page
+    page_number = request.GET.get('page')
+    notes = paginator.get_page(page_number)
+
+    context = {
+        'notes': notes,
+        'categories': categories,
+        'search_query': search_query,
+        'category_filter': category_filter,
+        'color_filter': color_filter,
+        'total_notes': notes_list.count(),
+    }
+    return render(request, "notes/home.html", context)
 
 
 def add_note(request):
@@ -38,4 +82,16 @@ def edit_note(request, note_id):
 def delete_note(request, note_id):
     note = get_object_or_404(Note, id=note_id)
     note.delete()
+    return redirect('home')
+
+def toggle_pin(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    note.is_pinned = not note.is_pinned
+    note.save()
+    return redirect('home')
+
+def toggle_favorite(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    note.is_favorite = not note.is_favorite
+    note.save()
     return redirect('home')

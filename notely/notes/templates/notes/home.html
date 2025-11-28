@@ -1,40 +1,85 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Notes</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+{% extends 'notes/base.html' %}
 
-<body class="bg-light">
-    <div class="container-sm mt-4 mb-5 px-3">
-        <h1 class="mb-4">📝 My Notes</h1>
-        <a href="{% url 'add_note' %}" class="btn btn-primary mb-4">Add New Note</a>
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3"><i class="bi bi-collection"></i> My Notes <span class="badge bg-secondary">{{ total_notes }}</span></h2>
 
+            <!-- Search -->
+            <form method="get" class="mb-3">
+                <div class="input-group search-bar">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search notes..." value="{{ search_query }}">
+                    {% if search_query or category_filter %}<a href="{% url 'home' %}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>{% endif %}
+                </div>
+            </form>
+
+            <!-- Filters -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <a href="?favorites=true" class="badge {% if request.GET.favorites %}bg-danger{% else %}bg-outline-secondary{% endif %}"><i class="bi bi-heart-fill"></i> Favorites</a>
+                {% if categories %}
+                <div class="dropdown d-inline">
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-folder"></i> {% if category_filter %}{{ category_filter }}{% else %}Categories{% endif %}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?">All</a></li>
+                        {% for category in categories %}<li><a class="dropdown-item" href="?category={{ category }}">{{ category }}</a></li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    {% if notes %}
+    <div class="row g-4">
         {% for note in notes %}
-            <div class="card mb-4 shadow-sm">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card note-card note-card-{{ note.color }} shadow-sm {% if note.is_pinned %}pinned{% endif %} h-100">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between py-2">
+                    <div>
+                        {% if note.is_pinned %}<span class="badge bg-warning text-dark"><i class="bi bi-pin-angle-fill"></i></span>{% endif %}
+                        {% if note.category %}<span class="badge bg-secondary"><i class="bi bi-folder"></i> {{ note.category }}</span>{% endif %}
+                    </div>
+                    <a href="{% url 'toggle_favorite' note.id %}">{% if note.is_favorite %}<i class="bi bi-heart-fill text-danger fs-5"></i>{% else %}<i class="bi bi-heart text-muted fs-5"></i>{% endif %}</a>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ note.title }}</h5>
-                    <p class="card-text">{{ note.content|linebreaks }}</p>
-
-                    <hr>
-                    <h6 class="text-muted">AI Summary:</h6>
-                    <p class="card-text text-muted fst-italic">{{ note.summary }}</p>
-
+                    <h5 class="fw-bold">{{ note.title }}</h5>
+                    <div class="note-content mb-3"><p>{{ note.content|truncatewords:50|linebreaks }}</p></div>
+                    {% if note.summary %}<div class="alert alert-light py-2"><small class="text-muted"><i class="bi bi-robot"></i> <strong>AI:</strong> {{ note.summary }}</small></div>{% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
                     <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ note.created_at|date:"F j, Y, g:i a" }}</small>
-
-                        <div>
-                            <a href="{% url 'edit_note' note.id %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                            <a href="{% url 'delete_note' note.id %}" class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('Are you sure you want to delete this note?');">Delete</a>
+                        <small class="text-muted"><i class="bi bi-clock"></i> {{ note.updated_at|timesince }} ago</small>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'toggle_pin' note.id %}" class="btn btn-outline-secondary btn-icon" title="Pin"><i class="bi bi-pin-angle"></i></a>
+                            <a href="{% url 'edit_note' note.id %}" class="btn btn-outline-primary btn-icon"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'delete_note' note.id %}" class="btn btn-outline-danger btn-icon" onclick="return confirmDelete('{{ note.title|escapejs }}');"><i class="bi bi-trash"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <div class="alert alert-info">No notes yet.</div>
+        </div>
         {% endfor %}
     </div>
-</body>
-</html>
+
+    <!-- Pagination -->
+    {% if notes.has_other_pages %}
+    <nav class="mt-5"><ul class="pagination justify-content-center">
+        {% if notes.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ notes.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>{% endif %}
+        <li class="page-item active"><span class="page-link">{{ notes.number }} / {{ notes.paginator.num_pages }}</span></li>
+        {% if notes.has_next %}<li class="page-item"><a class="page-link" href="?page={{ notes.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>{% endif %}
+    </ul></nav>
+    {% endif %}
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-journal-x" style="font-size: 5rem; color: var(--bs-secondary);"></i>
+        <h3 class="mt-3 text-muted">{% if search_query %}No notes found{% else %}No notes yet{% endif %}</h3>
+        <a href="{% url 'add_note' %}" class="btn btn-primary mt-3"><i class="bi bi-plus-lg"></i> Create Note</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

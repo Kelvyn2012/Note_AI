@@ -1,14 +1,33 @@
 # Notely - AI-Powered Note Taking Application
 
-A Django-based web application that allows users to create, edit, and manage notes with AI-powered automatic summarization using the T5 transformer model.
+A modern Django-based web application for creating, organizing, and managing notes with AI-powered automatic summarization using the T5 transformer model.
 
-## Features
+## ✨ Features
 
-- **Create Notes**: Add new notes with titles and content
-- **AI Summarization**: Automatically generates summaries for notes using the T5-small transformer model
-- **Edit Notes**: Update existing notes with automatic re-summarization
-- **Delete Notes**: Remove notes from the system
-- **Chronological Display**: Notes are displayed in reverse chronological order (newest first)
+### Core Functionality
+- **Create & Edit Notes**: Rich note creation with titles, content, and AI summarization
+- **AI Summarization**: Automatically generates summaries using T5-small transformer model
+- **Smart Fallback**: Works even on low-memory environments with simple summarization
+
+### 🎨 Organization & Visual
+- **Color Coding**: 7 color options for visual organization
+- **Categories**: Organize notes with custom categories
+- **Pinned Notes**: Pin important notes to the top
+- **Favorites**: Mark and filter favorite notes
+- **Dark Mode**: Toggle between light and dark themes
+
+### 🔍 Discovery
+- **Full-Text Search**: Search across titles, content, and categories
+- **Multi-Filter**: Filter by category, color, or favorites
+- **Pagination**: Efficient browsing with 12 notes per page
+
+### 💡 User Experience
+- **Modern UI**: Card-based layout with smooth animations
+- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **Keyboard Navigation**: Fully keyboard accessible
+- **Time Tracking**: Shows when notes were last updated
+
+For detailed feature documentation, see [FEATURES.md](FEATURES.md)
 
 ## Technology Stack
 
