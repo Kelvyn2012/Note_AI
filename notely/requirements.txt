@@ -1,6 +1,7 @@
 asgiref==3.9.1
 certifi==2025.7.9
 charset-normalizer==3.4.2
+dj-database-url==2.1.0
 Django==5.2.4
 filelock==3.18.0
 fsspec==2025.5.1
@@ -15,6 +16,7 @@ networkx==3.4.2
 numpy==1.26.4
 packaging==25.0
 pillow==11.3.0
+psycopg2-binary==2.9.9
 PyYAML==6.0.2
 regex==2024.11.6
 requests==2.32.4
