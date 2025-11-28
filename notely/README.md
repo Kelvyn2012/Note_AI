@@ -111,7 +111,7 @@ notely/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:Kelvyn2012/Note_AI.git
    cd notely
    ```
 
